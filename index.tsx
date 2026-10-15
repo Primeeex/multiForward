@@ -26,7 +26,6 @@ import {
     RestAPI,
     showToast,
     SnowflakeUtils,
-    Toasts,
     UserStore
 } from "@webpack/common";
 
@@ -53,10 +52,10 @@ const settings = definePluginSettings({
     }
 });
 
-// Evaluated lazily so we never touch the lazy-loaded Toasts export at module load.
+// Use string literals directly — Vencord's showToast accepts "success" | "failure" etc.
 const TOAST = {
-    get SUCCESS(): any { return (Toasts as any)?.Type?.SUCCESS ?? "success"; },
-    get FAILURE(): any { return (Toasts as any)?.Type?.FAILURE ?? "failure"; }
+    SUCCESS: "success" as const,
+    FAILURE: "failure" as const,
 };
 
 const dbg = (...args: any[]) => {
@@ -278,7 +277,7 @@ function findForwardItem(node: any): any {
 /** Open the native forward dialog for `anchor` and arm the replay of everything else. */
 function startNativeForward(anchor: { id: string; channel_id: string; }, nativeAction: (() => void) | undefined) {
     if (!nativeAction) {
-        showToast("Couldn't find Discord's native Forward action", TOAST.FAILURE);
+        showToast("Couldn't find Discord's native Forward action", TOAST.FAILURE as any);
         return;
     }
 
@@ -321,7 +320,7 @@ function forwardFromBar() {
         return;
     }
 
-    showToast("Scroll so one of your selected messages is visible, or right-click one and use Forward", TOAST.FAILURE);
+    showToast("Scroll so one of your selected messages is visible, or right-click one and use Forward", TOAST.FAILURE as any);
 }
 
 async function sendExtras(targetChannelId: string, extras: Selected[]) {
@@ -351,8 +350,8 @@ async function sendExtras(targetChannelId: string, extras: Selected[]) {
         }
     }
 
-    if (failed) showToast(`Forwarded ${ok + 1}, ${failed} failed (see console)`, TOAST.FAILURE);
-    else if (ok) showToast(`Forwarded ${ok + 1} messages`, TOAST.SUCCESS);
+    if (failed) showToast(`Forwarded ${ok + 1}, ${failed} failed (see console)`, TOAST.FAILURE as any);
+    else if (ok) showToast(`Forwarded ${ok + 1} messages`, TOAST.SUCCESS as any);
 }
 
 /** Shared by the REST hook and the Flux hook: replay the extras to `channelId` once per forward. */
